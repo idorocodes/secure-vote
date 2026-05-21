@@ -97,22 +97,6 @@ CREATE TABLE public_ballot_box (
 
 ```
 
----
-
-## 🛠️ The Tamper-Evident Hashing Mechanics
-
-When a ballot is inserted into Database 2, the `current_hash` is computed as follows:
-
-$$\text{Input String} = \text{position\_id} + \text{"-"} + \text{candidate\_id} + \text{"-"} + \text{voter\_token} + \text{"-"} + \text{previous\_hash}$$
-
-$$\text{current\_hash} = \text{SHA-256}(\text{Input String})$$
-
-* **The Chain Link:** By embedding the `previous_hash` into the current calculation, the entire history of the election is baked into the latest entry.
-* **The Genesis Block:** The first vote cast in any election defaults to a hardcoded `previous_hash` of sixty-four zeros (`00000000...`).
-* **Race-Condition Protection:** Database write operations use `SELECT ... FOR UPDATE` row-locking transactions to guarantee sequential execution under heavy traffic concurrency.
-
----
-
 ## 🕵️‍♂️ The Verification & Audit Protocol
 
 ### Post-Election Student Verification
@@ -201,7 +185,3 @@ npm run dev
 *   **Cryptography Modules:** Native Node.js `crypto` engine running deterministic SHA-256 parameters.
 *   **UI Typography & Assets:** Icon mapping structured natively through the **Font Awesome** toolkit.
 
-
-```
-
-```
