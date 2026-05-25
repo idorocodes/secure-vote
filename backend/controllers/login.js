@@ -33,7 +33,7 @@ const login = async (req, res) => {
     
     const { data: user, error } = await identityDb
       .from("students")
-      .select("student_id, password_hash")
+      .select("*")
       .eq("matric_number", matric_number)
       .maybeSingle(); 
     if (error) {
