@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js/dist/index.cjs";
 import dotenv from 'dotenv';
 
 
@@ -20,13 +20,8 @@ if (!identityUrl || !identityKey || !ballotUrl || !ballotKey) {
 
 
  
-export const identityDb = createClient(identityUrl, identityKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false
-  }
-});
-
+export const identityDb = createClient(identityUrl, identityKey);
+ 
 export const ballotDb = createClient(ballotUrl, ballotKey, {
   auth: {
     persistSession: false,

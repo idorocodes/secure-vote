@@ -1,6 +1,7 @@
 import express from "express"
 import morgan from "morgan";
 import router from "./routes/route.js";
+import resource404 from "./middleware/routeMiddleware.js";
 const app = express();
 
 app.use(express.json());
@@ -8,6 +9,7 @@ app.use(morgan("dev"));
 
 app.use(router);
 
+app.use(resource404)
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {

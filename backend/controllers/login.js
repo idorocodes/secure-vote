@@ -1,5 +1,6 @@
  import { identityDb } from "../config/db.js"; 
 import bcrypt from "bcrypt";
+import { generateToken } from "../utils/jwt.js";
 
 const login = async (req, res) => {
   console.log(`Login path requested at ${new Date().toString()}`);
@@ -15,7 +16,7 @@ const login = async (req, res) => {
       });
     }
 
-    if (matric_number.length < 14) {
+    if (matric_number.length < 13) {
       return res.status(400).json({
         success: false,
         message: "Incomplete Matric Number!",
@@ -57,11 +58,12 @@ const login = async (req, res) => {
       });
     }
 
-   
+    const userToken = generateToken(user);
     return res.status(200).json({
+      token :userToken,
       success: true,
       message: "Login successful!",
-      userId: user.student_id,
+      userId: user,
     });
 
   } catch (error) {
