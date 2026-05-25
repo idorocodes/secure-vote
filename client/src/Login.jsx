@@ -1,16 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Fixed: Added missing router hook for redirection
 
-const HashTicker = () => {
-  const chars = "0123456789abcdef";
-  const [hash, setHash] = useState("a3f9bc12e847d056c1f2a89b3d7e4c60");
-  useEffect(() => {
-    const iv = setInterval(() => {
-      setHash(Array.from({ length: 32 }, () => chars[Math.floor(Math.random() * 16)]).join(""));
-    }, 90);
-    return () => clearInterval(iv);
-  }, []);
-  return <span className="font-mono text-xs tracking-widest opacity-50 select-none">{hash}</span>;
-};
+
 
 const FloatingBlock = ({ style, value }) => (
   <div className="absolute rounded-xl border border-emerald-500/10 bg-emerald-500/5 px-3 py-1.5 font-mono text-xs text-emerald-400/30 select-none pointer-events-none" style={style}>
@@ -19,6 +10,7 @@ const FloatingBlock = ({ style, value }) => (
 );
 
 export default function Login() {
+  const navigate = useNavigate(); // Initialize the navigator
   const [matric, setMatric] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -29,19 +21,54 @@ export default function Login() {
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 80);
-    return () => clearTimeout(t);
+    return () => clearInterval(t);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
     if (!matric.trim()) { setError("Please enter your matric number."); return; }
     if (!password) { setError("Please enter your password."); return; }
+    
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      const response = await fetch("http://localhost:3000/api/v1/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ 
+          matric_number: matric.trim(), 
+          password: password 
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Invalid matric number or password.");
+      }
+
+      // Check all common payload shapes to find where the token string lives
+      const extractedToken = data.token || data.accessToken || (data.data && data.data.token);
+
+      if (extractedToken) {
+        localStorage.setItem("voter_session_token", extractedToken);
+        navigate("/dashboard");
+      } else {
+        // Log the complete keys back to help narrow down what keys the backend object sent
+        console.log("Unexpected Backend Payload Structure:", data);
+        throw new Error(`Token key missing. Received object keys: [${Object.keys(data).join(", ")}]`);
+      }
+
+    } catch (err) {
+      console.error("Login verification barrier crash:", err);
+      setError(err.message || "Connection refused by auth node cluster.");
+    } finally {
       setLoading(false);
-      setError("Invalid matric number or password. Please try again.");
-    }, 1800);
+    }
   };
 
   const floaters = [
@@ -97,8 +124,6 @@ export default function Login() {
       <div className="relative z-10 w-full max-w-md mx-4"
         style={{ opacity: mounted ? 1 : 0, transform: mounted ? "translateY(0)" : "translateY(24px)", transition: "opacity 0.8s ease, transform 0.8s ease" }}>
 
-        
-
         {/* Card */}
         <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl border border-slate-700/60 p-8 card-glow">
 
@@ -107,8 +132,6 @@ export default function Login() {
             <h2 className="text-xl font-semibold text-center text-white mb-1">Login</h2>
             <p className="text-slate-400 text-center text-sm leading-relaxed">Enter your credentials to access the secure ballot. Your identity is verified then permanently separated from your vote.</p>
           </div>
-
-       
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -176,7 +199,7 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Error */}
+            {/* Error Display */}
             {error && (
               <div className="flex items-start gap-3 bg-red-500/8 border border-red-500/20 rounded-xl px-4 py-3 shake">
                 <span className="text-red-400 text-base flex-shrink-0 mt-0.5">⚠</span>
@@ -184,9 +207,9 @@ export default function Login() {
               </div>
             )}
 
-            {/* Submit */}
+            {/* Submit Button */}
             <button type="submit" disabled={loading}
-              className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-70 disabled:cursor-not-allowed text-slate-950 font-bold py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/20 active:scale-[0.98] flex items-center justify-center gap-2.5 text-sm mt-2">
+              className="w-full cursor-pointer bg-emerald-500 hover:bg-emerald-400 disabled:opacity-70 disabled:cursor-not-allowed text-slate-950 font-bold py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/20 active:scale-[0.98] flex items-center justify-center gap-2.5 text-sm mt-2">
               {loading ? (
                 <>
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -206,33 +229,11 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-slate-600 text-xs">secured by</span>
-            <div className="flex-1 h-px bg-slate-800" />
-          </div>
-
-          {/* Trust indicators */}
-          <div className="grid grid-cols-3 gap-3 text-center">
-            {[
-              { icon: "🔗", label: "Hash Chain" },
-              { icon: "🏛️", label: "Dual-DB Isolation" },
-              { icon: "🧾", label: "Receipt Token" },
-            ].map(({ icon, label }) => (
-              <div key={label} className="bg-slate-800/50 rounded-xl py-2.5 px-2">
-                <div className="text-base mb-1">{icon}</div>
-                <div className="text-slate-500 text-xs leading-tight">{label}</div>
-              </div>
-            ))}
-          </div>
+        
+          
         </div>
 
-        {/* Live hash footer */}
-        <div className="mt-5 flex items-center justify-center gap-2.5 text-slate-600">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block flex-shrink-0" />
-          <HashTicker />
-        </div>
+      
 
         {/* Help link */}
         <p className="text-center text-slate-600 text-xs mt-4">

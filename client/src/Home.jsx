@@ -44,19 +44,7 @@ const HashAnimation = () => {
   );
 };
 
-const FlowStep = ({ step, label, sub, icon, delay, color }) => {
-  const [ref, inView] = useInView();
-  return (
-    <div ref={ref} className="flex flex-col items-center gap-2" style={{ opacity: inView ? 1 : 0, transform: inView ? "translateY(0)" : "translateY(24px)", transition: `opacity 0.6s ${delay}ms, transform 0.6s ${delay}ms` }}>
-      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl ${color} shadow-lg`}>{icon}</div>
-      <div className="text-center">
-        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-0.5">Step {step}</div>
-        <div className="text-sm font-semibold text-white">{label}</div>
-        <div className="text-xs text-slate-400 mt-0.5 max-w-[110px]">{sub}</div>
-      </div>
-    </div>
-  );
-};
+
 
 const FeatureCard = ({ icon, title, desc, delay }) => {
   const [ref, inView] = useInView();
@@ -166,6 +154,7 @@ export default function Home() {
         {[...Array(6)].map((_, i) => (
           <div key={i} className="absolute rounded-xl border border-emerald-500/10 bg-emerald-500/5 px-3 py-1.5 text-emerald-400/40 font-mono text-xs select-none"
             style={{ top: `${15 + i * 12}%`, left: i % 2 === 0 ? `${5 + i * 2}%` : "auto", right: i % 2 !== 0 ? `${5 + i * 2}%` : "auto", animation: `float ${4 + i * 0.7}s ease-in-out infinite`, animationDelay: `${i * 0.5}s` }}>
+          
             {Math.random().toString(16).slice(2, 10)}
           </div>
         ))}
@@ -190,8 +179,8 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center"
             style={{ opacity: heroIn ? 1 : 0, transition: "opacity 0.8s 500ms" }}>
-            <a href="#features" className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-8 py-4 rounded-2xl transition-all duration-200 hover:shadow-xl hover:shadow-emerald-500/25 text-base">
-              Explore the Platform →
+            <a href="/dashboard" className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-8 py-4 rounded-2xl transition-all duration-200 hover:shadow-xl hover:shadow-emerald-500/25 text-base">
+              Explore the Platform 
             </a>
             <a href="#architecture" className="border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white font-medium px-8 py-4 rounded-2xl transition-all duration-200 text-base">
               See Architecture
@@ -217,6 +206,7 @@ export default function Home() {
             { label: "Tamper Attempts Blocked", value: 100, suffix: "%" },
             { label: "Universities Supported", value: 12, suffix: "" },
           ].map(({ label, value, suffix }, i) => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const [r, iv] = useInView();
             return (
               <div key={label} ref={r} style={{ opacity: iv ? 1 : 0, transform: iv ? "translateY(0)" : "translateY(20px)", transition: `opacity 0.6s ${i * 100}ms, transform 0.6s ${i * 100}ms` }}>
