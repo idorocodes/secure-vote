@@ -142,9 +142,10 @@ export default function Home() {
               <a key={l} href={`#${l.toLowerCase()}`} className="text-sm text-slate-400 hover:text-white transition-colors">{l}</a>
             ))}
           </div>
-          <a href="#features" className="hidden md:inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm px-5 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/20">
-            Get Started →
+          <a  href="/login" className="hidden md:inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm px-5 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/20">
+            Get Started 
           </a>
+          
           <button className="md:hidden text-slate-400" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
         </div>
         {menuOpen && (
