@@ -24,6 +24,10 @@ export default function Login() {
     return () => clearInterval(t);
   }, []);
 
+
+  const baseUrl = "https://secure-vote-2mtn.onrender.com";
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -34,7 +38,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/api/v1/login", {
+      const response = await fetch(`${baseUrl}/api/v1/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

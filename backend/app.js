@@ -4,7 +4,10 @@ import router from "./routes/route.js";
 import resource404 from "./middleware/routeMiddleware.js";
 import cors from "cors"
 const app = express();
+import dotenv from 'dotenv';
 
+
+dotenv.config();
 
 
 app.use(cors())

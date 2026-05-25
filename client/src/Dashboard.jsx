@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [selectedBallotChoices, setSelectedBallotChoices] = useState({}); 
 
   const token = localStorage.getItem("voter_session_token");
+  const baseUrl = "https://secure-vote-2mtn.onrender.com";
 
   useEffect(() => {
     if (!token) {
@@ -38,7 +39,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchElectionEcosystem = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/elections/active", {
+        const response = await fetch(`${baseUrl}/api/v1/elections/active`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`
@@ -94,7 +95,7 @@ export default function Dashboard() {
 
     setSubmittingVote(true);
     try {
-      const response = await fetch("http://localhost:3000/api/v1/elections/vote/submit", {
+      const response = await fetch(`${baseUrl}/api/v1/elections/vote/submit`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
